@@ -6,12 +6,6 @@ import torch.optim as optim
 learning_rate = 2e-4
 gamma = 0.98
 
-# if torch.cuda.is_available():
-#     from torch.cuda import FloatTensor
-#     torch.set_default_tensor_type(torch.cuda.FloatTensor)
-# else:
-#     from torch import FloatTensor
-
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
@@ -58,13 +52,6 @@ class ActorCritic(nn.Module):
             torch.tensor(rewards,dtype=torch.float).to(device),\
             torch.tensor(states_prime,dtype=torch.float).to(device),\
             torch.tensor(done_list, dtype=torch.float).to(device)
-        
-        # s_batch, a_batch, r_batch, s_prime_batch, done_batch = \
-        #     FloatTensor(states),\
-        #     torch.tensor(actions),\
-        #     FloatTensor(rewards),\
-        #     FloatTensor(states_prime),\
-        #     torch.tensor(done_list, dtype=torch.float)
 
         self.data = []
 
