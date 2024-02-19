@@ -6,6 +6,14 @@ import torch.optim as optim
 learning_rate = 2e-4
 gamma = 0.98
 
+# if torch.cuda.is_available():
+#     from torch.cuda import FloatTensor
+#     torch.set_default_tensor_type(torch.cuda.FloatTensor)
+# else:
+#     from torch import FloatTensor
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 class ActorCritic(nn.Module):
     def __init__(self):
@@ -15,6 +23,7 @@ class ActorCritic(nn.Module):
         self.fc_shared = nn.Linear(4,256)
         self.fc_pi = nn.Linear(256,2)
         self.fc_v = nn.Linear(256,1)
+        self.to(device)
         self.optimizer = optim.Adam(self.parameters(), lr=learning_rate)
 
     def pi(self, x, softmax_dim=0):
@@ -42,12 +51,20 @@ class ActorCritic(nn.Module):
             d_mask = 0.0 if done else 1.0
             done_list.append([d_mask])
 
+
         s_batch, a_batch, r_batch, s_prime_batch, done_batch = \
-            torch.tensor(states, dtype=torch.float),\
-            torch.tensor(actions),\
-            torch.tensor(rewards,dtype=torch.float),\
-            torch.tensor(states_prime,dtype=torch.float),\
-            torch.tensor(done_list, dtype=torch.float)
+            torch.tensor(states, dtype=torch.float).to(device),\
+            torch.tensor(actions).to(device),\
+            torch.tensor(rewards,dtype=torch.float).to(device),\
+            torch.tensor(states_prime,dtype=torch.float).to(device),\
+            torch.tensor(done_list, dtype=torch.float).to(device)
+        
+        # s_batch, a_batch, r_batch, s_prime_batch, done_batch = \
+        #     FloatTensor(states),\
+        #     torch.tensor(actions),\
+        #     FloatTensor(rewards),\
+        #     FloatTensor(states_prime),\
+        #     torch.tensor(done_list, dtype=torch.float)
 
         self.data = []
 
